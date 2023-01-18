@@ -1,12 +1,9 @@
-//UNFINISHED VERSION NEW WILL BE UPDATED ONCE I FIGURE OUT HOW TO W
-//NEW COMPUTERS
-
 /**
  *	City data - the city name, state name, location designation,
  *				and population est. 2017
  *
  *	@author	Sidhant Malik
- *	@since	
+ *	@since	Jan 13th 2023
  */
 public class City implements Comparable<City> {
 	
@@ -48,36 +45,43 @@ public class City implements Comparable<City> {
 		}
 	}
 	
-	public String getName()
-	{
-		
-		System.out.println(name);
-		return name;
-	}
-	
 	/**	Equal city name and state name
 	 *	@param other		the other City to compare
 	 *	@return				true if city name and state name equal; false otherwise
 	 */
 	public boolean equals(City other)
 	{
-		if (this.name.equals(other.name))
-		{
+		if (this.name.equals(other.name) && this.state.equals(other.state))
 			return true;
-		}
 		else 
-		{
 			return false;
-		}
 	}
 	
 	/**	Accessor methods */
+	
+	/**
+	 * Getter method used to get the name of the current city
+	 * @return The name of the current city
+	 */
+	public String getName()
+	{		
+		return name;
+	}
+	
+	/**
+	 * Getter method used to get the name of the current state
+	 * @return The name of the current state
+	 */
+	public String getState()
+	{
+		return state;
+	}
 	
 	
 	/**	toString */
 	@Override
 	public String toString() {
-		return String.format("%-18s %-10s %-14s %10d", state, name, designation,
+		return String.format("%-22s %-22s %-12s %,12d", state, name, designation,
 						population);
 	}
 }

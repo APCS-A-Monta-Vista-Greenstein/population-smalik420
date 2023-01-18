@@ -1,95 +1,71 @@
-//UNFINISHED VERSION NEW WILL BE UPDATED & SENT ONCE I FIGURE OUT HOW TO WITH
-//NEW COMPUTERS
-
-//does this upload to githubcheck
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- *	Population - <description goes here>
+ *	Population - This is a program which uses a variety 
+ *	of sort methods to create different sorts based off a
+ *	text file with population, city, state, and town type
+ *	data based on the users choice. 
  *
  *	Requires FileUtils and Prompt classes.
  *
  *	@author	Sidhant Malik
- *	@since	
+ *	@since	Jan 13, 2023
  */
 public class Population 
 {
 	// List of cities
 	private List<City> cities;
-	
 	// US data file
 	private final String DATA_FILE = "usPopData2017.txt";
-	
+	// Boolean for whether program is running or not
 	private boolean running;
 	
+	/**
+	 * No-Arg Constructor initializes necessary variables to defaults
+	 */
 	public Population()
 	{
 		running = true;
 		cities = new ArrayList<City>();
 	}
 	
+	/**
+	 * In main, a Population object is created and used to call run. 
+	 */
 	public static void main(String[] args) 
 	{
 		Population p = new Population();
 		p.run();
 	}
 	
+	/**
+	 * In run, the file is loaded and the introduction is printed. Then
+	 * the loop with the prompt asking the user for their preference is run. 
+	 */
 	public void run()
 	{
 		loadFile();
-	//	printIntroduction();
-	//	printMenu();
-		running = false;
-		
-	//	System.out.println("no sort-----------------------------------");
-	//	for (int i = 0; i < cities.size();i++) System.out.println(cities.get(i));   
-		
-		sortDescendingName();
-		System.out.println("descending name-----------------------------------");
-//		for (int i = 0; i < cities.size();i++) System.out.println(cities.get(i));   
-		
-	//	sortAscendingName();
-	//	System.out.println("ascending name-----------------------------------");
-	//	for (int i = 0; i < cities.size();i++) System.out.println(cities.get(i));   
-		
-	//	sortDescendingPop();
-	//	System.out.println("descending pop-----------------------------------");
-	//	for (int i = 0; i < cities.size();i++) System.out.println(cities.get(i));   
-
-
-	//	sortAscendingPop();
-	//	System.out.println("ascending pop-----------------------------------");
-	//	for (int i = 0; i < cities.size();i++) System.out.println(cities.get(i));   
-		
-		
+		printIntroduction();
 		
 		while (running)
 		{
-			int userChoice = getUserChoice();
-			startOperation(userChoice);
-			if (running)
-				printMenu();
+			printMenu();
+			int choice = getUserChoice();
+			startOperation(choice);
 		}
 		
+		System.out.println("\nThanks for using Population!");
 	}
 	
-	public int getUserChoice() 
-	{
-		int choice = 0;
-		
-		//dont take 7 & 8
-		choice = Prompt.getInt("Enter selection ", 0, 9);
-		System.out.println("entered " + choice);
-		
-		System.out.println(choice + "returned");
-		return choice;
-	}
-	
+	/**
+	 * This method loads the file with the and creates a city
+	 * object with the correct characteristics using the delimeter.
+	 */
 	public void loadFile()
 	{
-		Scanner fileScanner = FileUtils.openToRead("usPopData2017.txt");
+		Scanner fileScanner = FileUtils.openToRead(DATA_FILE);
 		fileScanner.useDelimiter("[\t\n]");
 		
 		while (fileScanner.hasNext())
@@ -99,109 +75,331 @@ public class Population
 			String name = "";
 			int population = -1;
 			
-			for (int i = 0; i < 4; i++) 
-			{
-				if (fileScanner.hasNext())
+			if (fileScanner.hasNext())
 				state = fileScanner.next();
-				
-				if (fileScanner.hasNext())
-				designation = fileScanner.next();
-				
-				if (fileScanner.hasNext())
+			
+			if (fileScanner.hasNext())
 				name = fileScanner.next();
-				
-				if (fileScanner.hasNext())
+			
+			if (fileScanner.hasNext())
+				designation = fileScanner.next();
+			
+			if (fileScanner.hasNext())
 				population = fileScanner.nextInt();
-			}
 
 			cities.add(new City(name, state, designation, population));
 		}
 		
 	}
 	
-	public void startOperation(int userChoiceIn)
+	/**
+	 * This method is used to get the users choice for the sort that they
+	 * want to do using the prompt class. 
+	 * 
+	 * @return 1 - 6 when picking sort or 9 if ending program.  
+	 */
+	public int getUserChoice( ) 
 	{
-		if (userChoiceIn == 1)
-			fiftyLeastPopulous();
-		if (userChoiceIn == 2)
-			fiftyMostPopulous();
-		if (userChoiceIn == 3)
-			firstFiftyByName();
-		if (userChoiceIn == 4)
-			lastFiftyByName();
-		if (userChoiceIn == 5)
-			fiftyMostPopulousByState();
-		if (userChoiceIn == 6)
-			citiesMatchingNameByPop();
-		if (userChoiceIn == 9)
-		{	
-			running = false;
+		int choice = -1;
+		boolean validFound = false; 
+		while (!validFound)
+		{
+			choice = Prompt.getInt("Enter selection ", 1, 9);
+			
+			if (choice == 7 || choice == 8)
+				validFound = false;
+			else	
+				validFound = true;
 		}
-		
+
+		return choice;
 	}
 	
+	/**
+	 * This control method is called in run and takes in the
+	 * users choice to call the appropriate sort method. If 9 
+	 * is entered then the fv userChoiceIn is set to false. 
+	 * 
+	 * @param users sort of choice
+	 */
+	public void startOperation(int userChoiceIn)
+	{
+		if (userChoiceIn == 1) fiftyLeastPopulous();
+		if (userChoiceIn == 2) fiftyMostPopulous();
+		if (userChoiceIn == 3) firstFiftyByName();
+		if (userChoiceIn == 4) lastFiftyByName();
+		if (userChoiceIn == 5) fiftyMostPopulousByState();
+		if (userChoiceIn == 6) citiesMatchingNameByPopulation();
+		if (userChoiceIn == 9) running = false;
+	}
+	
+	/**
+	 * Choice 1 - This calls a selection sort to sort from least to
+	 * highest population and then displays the first 50 cities
+	 * formatted properly. 
+	 */
 	public void fiftyLeastPopulous() 
 	{
-		sortAscendingPop();
-		
 		System.out.println("\nFifty least populous cities");
-		System.out.printf("%-18s %-19s %-20s %10s\n", "State", "Type", "City", "Population");
+		long startMilliSec = System.currentTimeMillis();
+		sortAscendingPopulation();
+		long endMilliSec= System.currentTimeMillis();
+		
+		System.out.printf("    %-22s %-22s %-12s %12s\n", "State", "City", "Type", "Population");
 		for (int i = 0; i < 50; i++)
 		{
 			String line = cities.get(i).toString();
-			
 			if ( i < 9)
 				System.out.println(" " + (i + 1) + ": " + line);
 			else
 				System.out.println("" + (i + 1) + ": " + line);
 		}
+		
+		System.out.println("\nElapsed Time " + (endMilliSec - startMilliSec) + " milliseconds");
 	}
 	
+	/**
+	 * Choice 2 - This calls a merge sort to sort from highest to
+	 * least population and then displays the first 50 cities
+	 * formatted properly. 
+	 */
 	public void fiftyMostPopulous() 
 	{
-		sortDescendingPop();
+		System.out.println("\nFifty most populous cities");
+		long startMilliSec = System.currentTimeMillis();
+		sortDescendingPopulation();
+		long endMilliSec= System.currentTimeMillis();
+		
+		System.out.printf("    %-22s %-22s %-12s %12s\n", "State", "City", "Type", "Population");
+		for (int i = 0; i < 50; i++)
+		{
+			String line = cities.get(i).toString();
+			if ( i < 9)
+				System.out.println(" " + (i + 1) + ": " + line);
+			else
+				System.out.println("" + (i + 1) + ": " + line);
+		}
+		
+		System.out.println("\nElapsed Time " + (endMilliSec - startMilliSec) + " milliseconds");
 	}
 	
+	/**
+	 * Choice 3 - This calls a insertion sort to sort from lowest to
+	 * highest alphabetical city namne order and then displays the first 50 cities
+	 * formatted properly. 
+	 */
 	public void firstFiftyByName() 
 	{
-		sortDescendingName();
+		System.out.println("\nFifty cities sorted by name");
+		long startMilliSec = System.currentTimeMillis();
+		sortAscendingName();
+		long endMilliSec= System.currentTimeMillis();
+		
+		System.out.printf("    %-22s %-22s %-12s %12s\n", "State", "City", "Type", "Population");
+		for (int i = 0; i < 50; i++)
+		{
+			String line = cities.get(i).toString();
+			if ( i < 9)
+				System.out.println(" " + (i + 1) + ": " + line);
+			else
+				System.out.println("" + (i + 1) + ": " + line);
+		}
+		
+		System.out.println("\nElapsed Time " + (endMilliSec - startMilliSec) + " milliseconds");
 	}
 	
+	/**
+	 * Choice 4 - This calls a merge sort to sort from highest to
+	 * lowerst alphabetical city namne order and then displays the first 50 cities
+	 * formatted properly. 
+	 */
 	public void lastFiftyByName() 
 	{
-		sortAscendingName();
+		System.out.println("\nFifty cities sorted by name descending");
+		long startMilliSec = System.currentTimeMillis();
+		sortDescendingName();
+		long endMilliSec= System.currentTimeMillis();
+
+		System.out.printf("    %-22s %-22s %-12s %12s\n", "State", "City", "Type", "Population");
+		for (int i = 0; i < 50; i++)
+		{
+			String line = cities.get(i).toString();
+			if ( i < 9)
+				System.out.println(" " + (i + 1) + ": " + line);
+			else
+				System.out.println("" + (i + 1) + ": " + line);
+		}
+		
+		System.out.println("\nElapsed Time " + (endMilliSec - startMilliSec) + " milliseconds");
 	}
 	
+	/**
+	 * Choice 5 - This first stores all of the states in an array list,
+	 * and then uses the prompt class to take in a state from the user,
+	 * and if it is a valid state, it then creates an array of the cities
+	 * in that state and uses a selection to sort to sort them from 
+	 * highest to lowest population before printing them out formatted. 
+	 */
 	public void fiftyMostPopulousByState() 
 	{
-		sortDescendingPop();
-	}
-	
-	public void citiesMatchingNameByPop() 
-	{
-		sortDescendingPop();
-	}
-	
+		System.out.println();
+		//create list of all states
+		List<String> allStates = new ArrayList<String>();
+		for (int i = 0; i < cities.size(); i++)
+		{
+			if (!(allStates.contains(cities.get(i).getState() ) ) )
+			{
+				allStates.add(cities.get(i).getState());
+			}
+			
+		}
+				
+		boolean found = false;
+		String input = "";
+		while (!found)
+		{
+			input = Prompt.getString("Enter state name (ie. Alabama) ");
+			if (allStates.contains(input))
+				found = true;
+			else
+				System.out.println("ERROR: " + input + " is not valid");
+		}
+		
+		List<City> newCities = new ArrayList<City>();
+		
+		for (int i = 0; i < cities.size(); i++)
+		{
+			if (cities.get(i).getState().equals(input))
+			{
+				newCities.add(cities.get(i));
+			}
+		}
+		
 
-	//selection sort
-	public void sortAscendingPop()
+		//selection
+		for (int i = 0; i < newCities.size(); i++) 
+		{
+			int max = 0;
+			for (int j = 1; j < newCities.size() - i; j++) 
+			{
+				if (newCities.get(j).compareTo(newCities.get(max)) < 0)
+				{
+					max = j;
+				}
+			}
+			
+			swap(newCities, max, newCities.size() - 1 - i);
+		}
+		
+
+		//print results
+		System.out.println("\nFifty most populous cities in " + input);
+		System.out.printf("    %-22s %-22s %-12s %12s\n", "State", "City", "Type", "Population");
+		for (int i = 0; i < 50; i++)
+		{
+			String line = newCities.get(i).toString();
+			if ( i < 9)
+				System.out.println(" " + (i + 1) + ": " + line);
+			else
+				System.out.println("" + (i + 1) + ": " + line);
+		}
+		
+	}
+	
+	/**
+	 * Choice 6 - This first stores all of the cities in an array list,
+	 * and then uses the prompt class to take in a city from the user,
+	 * and if it is a valid state, it then creates an array of the cities
+	 * with that name and uses a selection to sort to sort them from 
+	 * highest to lowest population before printing them out formatted. 
+	 */
+	public void citiesMatchingNameByPopulation() 
+	{
+		List<String> allCities = new ArrayList<String>();
+		
+		for (int i = 0; i < cities.size(); i++)
+		{
+			if (!(allCities.contains(cities.get(i).getName() ) ) )
+			{
+				allCities.add(cities.get(i).getName());
+			}
+			
+		}
+				
+		boolean found = false;
+		String input = "";
+		while (!found)
+		{
+			input = Prompt.getString("Enter city name ");
+			if (allCities.contains(input))
+				found = true;
+			else
+				System.out.println("ERROR: " + input + " is not valid");
+		}
+		
+		List<City> newCities = new ArrayList<City>();
+		
+		for (int i = 0; i < cities.size(); i++)
+		{
+			if (cities.get(i).getName().equals(input))
+			{
+				newCities.add(cities.get(i));
+			}
+		}
+		
+
+		//selection
+		for (int i = 0; i < newCities.size(); i++) 
+		{
+			int max = 0;
+			for (int j = 1; j < newCities.size() - i; j++) 
+			{
+				if (newCities.get(j).compareTo(newCities.get(max)) < 0)
+				{
+					max = j;
+				}
+			}
+			
+			swap(newCities, max, newCities.size() - 1 - i);
+		}
+	
+		//print results
+		for (int i = 0; i < newCities.size(); i++)
+		{
+			String line = newCities.get(i).toString();
+			if ( i < 9)
+				System.out.println(" " + (i + 1) + ": " + line);
+			else
+				System.out.println("" + (i + 1) + ": " + line);
+		}
+		
+	}
+	
+	/**
+	 * This method uses selection sort to sort the cities by 
+	 * population going from low to high. 
+	 */
+	public void sortAscendingPopulation()
 	{
 		for (int i = 0; i < cities.size(); i++) 
 		{
 			int max = 0;
-			for (int j = 1; j < cities.size() - i - 1; j++) {
+			for (int j = 1; j < cities.size() - i - 1; j++) 
+			{
 				if (cities.get(j).compareTo(cities.get(max)) > 0)
+				{
 					max = j;
+				}
 			}
+			
 			swap(cities, max, cities.size() - 1 - i);
 		}
-		
-		
 	}
 	
-	
-	
-	//insertion sort
+	/**
+	 * This method uses insertion sort to sort the cities by 
+	 * name (alphabetically) going from low to high. 
+	 */
 	public void sortAscendingName()
 	{
 		for (int i = 0; i < cities.size() - 1; i++) 
@@ -214,29 +412,48 @@ public class Population
 						j = 0;
 			}
 		}
-
-		
 	}
 	
-	//merge sort
-	public void sortDescendingPop()
+	/**
+	 * This is the main method of the descending population merge 
+	 * sort, which calls mergeSortPopulation one time while passing
+	 * in the outer bounds. 
+	 */
+	public void sortDescendingPopulation()
 	{
-		sortPop(cities, 0, cities.size() - 1);
+		mergeSortPop(0, cities.size() - 1);
 	}
 	
-	public void sortPop(List<City> arr, int left, int right) 
+	/**
+	 * Merge sort pop is passed in the outer parameters and uses them
+	 * to repeatedly call itself for the left and right hand half 
+	 * befor eeventually calling mergePop which will merge all 
+	 * the halves together. 
+	 * @param int left boundary
+	 * @param int right boundary
+	 */
+	public void mergeSortPop(int left, int right)
 	{
-		if (left < right) {
-			int middle = left + (right - left) / 2;
-
-			sortPop(arr, left, middle);
-			sortPop(arr, middle + 1, right);
-
-			mergePop(arr, left, middle, right);
+		if (left < right)
+		{
+			int middle = left + (right - left ) / 2;
+			
+			mergeSortPop(left, middle);
+			mergeSortPop(middle + 1, right);
+			
+			mergePop(left, middle, right);
 		}
 	}
 	
-	public void mergePop(List<City> arr, int left, int middle, int right) 
+	/**
+	 * Mergepop is used to merge the different halves together, and it 
+	 * works by creating temporary lists to hold the left and right hand
+	 * side contents before combining both of them
+	 * @param int left hand boundary
+	 * @param int middle value so that it does nto need to be calculated here again
+	 * @param int right hand boundary
+	 */
+	public void mergePop(int left, int middle, int right)
 	{
 		int size1 = middle - left + 1;
 		int size2 = right - middle;
@@ -245,11 +462,12 @@ public class Population
 		ArrayList<City> rightArr = new ArrayList<City>();
 
 
-		for (int i = 0; i < size1; i++) {
-			leftArr.add(arr.get(left + i));
+		for (int i = 0; i < size1; i++) 
+		{
+			leftArr.add(cities.get(left + i));
 		}
 		for (int i = 0; i < size2; i++) {
-			rightArr.add(arr.get(middle + 1 + i));
+			rightArr.add(cities.get(middle + 1 + i));
 		}
 
 		int leftIndex = 0;
@@ -258,14 +476,14 @@ public class Population
 
 		while(leftIndex < size1 && rightIndex < size2) 
 		{
-			if (leftArr.get(leftIndex).compareTo(rightArr.get(rightIndex)) <= 0) 
+			if (leftArr.get(leftIndex).compareTo(rightArr.get(rightIndex)) >= 0) 
 			{
-				arr.set(index, leftArr.get(leftIndex));
+				cities.set(index, leftArr.get(leftIndex));
 				leftIndex++;
 			}
 			else 
 			{
-				arr.set(index, rightArr.get(rightIndex));
+				cities.set(index, rightArr.get(rightIndex));
 				rightIndex++;
 			}
 			index++;
@@ -273,39 +491,60 @@ public class Population
 
 		while (leftIndex < size1) 
 		{
-			arr.set(index, leftArr.get(leftIndex));
+			cities.set(index, leftArr.get(leftIndex));
 			leftIndex++;
 			index++;
 		}
 
 		while (rightIndex < size2) 
 		{
-			arr.set(index, rightArr.get(rightIndex));
+			cities.set(index, rightArr.get(rightIndex));
 			rightIndex++;
 			index++;
 		}
+	
 	}
 	
-	
-	//merge sort
+	/**
+	 * This is the main method of the descending name merge 
+	 * sort, which calls mergeSortName one time while passing
+	 * in the outer bounds. 
+	 */
 	public void sortDescendingName()
 	{
-		sortName(cities, 0, cities.size() - 1);
+		mergeSortName(0, cities.size() - 1);
 	}
 	
-	public void sortName(List<City> arr, int left, int right) 
+	/**
+	 * Merge sort name is passed in the outer parameters and uses them
+	 * to repeatedly call itself for the left and right hand half 
+	 * befor eeventually calling mergePop which will merge all 
+	 * the halves together. 
+	 * @param int left boundary
+	 * @param int right boundary
+	 */
+	public void mergeSortName(int left, int right)
 	{
-		if (left < right) {
-			int middle = left + (right - left) / 2;
-
-			sortName(arr, left, middle);
-			sortName(arr, middle + 1, right);
-
-			mergeName(arr, left, middle, right);
+		if (left < right)
+		{
+			int middle = left + (right - left ) / 2;
+			
+			mergeSortName(left, middle);
+			mergeSortName(middle + 1, right);
+			
+			mergeName(left, middle, right);
 		}
 	}
-
-	public void mergeName(List<City> arr, int left, int middle, int right) 
+	
+	/**
+	 * Mergepop is used to merge the different halves together, and it 
+	 * works by creating temporary lists to hold the left and right hand
+	 * side contents before combining both of them
+	 * @param int left hand boundary
+	 * @param int middle value so that it does nto need to be calculated here again
+	 * @param int right hand boundary
+	 */
+	public void mergeName(int left, int middle, int right)
 	{
 		int size1 = middle - left + 1;
 		int size2 = right - middle;
@@ -314,11 +553,12 @@ public class Population
 		ArrayList<City> rightArr = new ArrayList<City>();
 
 
-		for (int i = 0; i < size1; i++) {
-			leftArr.add(arr.get(left + i));
+		for (int i = 0; i < size1; i++) 
+		{
+			leftArr.add(cities.get(left + i));
 		}
 		for (int i = 0; i < size2; i++) {
-			rightArr.add(arr.get(middle + 1 + i));
+			rightArr.add(cities.get(middle + 1 + i));
 		}
 
 		int leftIndex = 0;
@@ -327,14 +567,14 @@ public class Population
 
 		while(leftIndex < size1 && rightIndex < size2) 
 		{
-			if (leftArr.get(leftIndex).getName().compareTo(rightArr.get(rightIndex).getName()) <= 0) 
+			if (leftArr.get(leftIndex).getName().compareTo(rightArr.get(rightIndex).getName()) >= 0) 
 			{
-				arr.set(index, leftArr.get(leftIndex));
+				cities.set(index, leftArr.get(leftIndex));
 				leftIndex++;
 			}
 			else 
 			{
-				arr.set(index, rightArr.get(rightIndex));
+				cities.set(index, rightArr.get(rightIndex));
 				rightIndex++;
 			}
 			index++;
@@ -342,26 +582,34 @@ public class Population
 
 		while (leftIndex < size1) 
 		{
-			arr.set(index, leftArr.get(leftIndex));
+			cities.set(index, leftArr.get(leftIndex));
 			leftIndex++;
 			index++;
 		}
 
 		while (rightIndex < size2) 
 		{
-			arr.set(index, rightArr.get(rightIndex));
+			cities.set(index, rightArr.get(rightIndex));
 			rightIndex++;
 			index++;
 		}
-	}
-
 	
+	}
+	
+	/**
+	 * Swap is used to swap two elements of any list passed in. 
+	 * 
+	 * @param List to switch
+	 * @param int x the position of the first element
+	 * @param int y the position of the second element
+	 */
 	private void swap(List<City> arr, int x, int y) 
 	{
-		City temp = arr.get(x);
-		arr.set(x, arr.get(y));
-		arr.set(y, temp);
+		City tempCityObj = arr.get(x);
+		arr.set( x, arr.get(y) );
+		arr.set(y, tempCityObj);
 	}
+	
 	
 	/**	Prints the introduction to Population */
 	public void printIntroduction() {
@@ -372,11 +620,12 @@ public class Population
 		System.out.println("\\/    \\___/| .__/ \\__,_|_|\\__,_|\\__|_|\\___/|_| |_|");
 		System.out.println("           |_|");
 		System.out.println();
+		System.out.println("\n31765 cities in database");
 	}
 	
 	/**	Print out the choices for population sorting */
 	public void printMenu() {
-		System.out.println("1. Fifty least populous cities in USA (Selection Sort)");
+		System.out.println("\n1. Fifty least populous cities in USA (Selection Sort)");
 		System.out.println("2. Fifty most populous cities in USA (Merge Sort)");
 		System.out.println("3. First fifty cities sorted by name (Insertion Sort)");
 		System.out.println("4. Last fifty cities sorted by name descending (Merge Sort)");
